@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ürün Açıklama</title>
+    <style>
+        body {
+            background: radial-gradient(ellipse at center, #0a2e38 0%, black 100%);
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        #productForm {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 3px 150px;
+            box-shadow: 0 0 20px 20px dodgerblue;
+            animation: fadeInFromTop 2s forwards, spinIn 2s forwards;
+            position: relative;
+            border-radius: 50px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .left {
+            flex: 1;
+            padding: 10px;
+        }
+
+        .right {
+            flex: 2;
+            padding: 10px;
+        }
+
+        input[type="text"] {
+            display: block;
+            width: 110%;
+            padding: 10px;
+            margin: 10px 0;
+            border: skyblue;
+            border-radius: 20px;
+            color: rgb(255, 255, 255);
+            font-size: 14px;
+            background-color: black;
+            box-shadow: 10px 15px 50px 10px dodgerblue;
+
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 330px;
+            margin: 30px 0;
+            margin-left: 200px;
+            margin-top: 1px;
+            border: 2px solid dodgerblue;
+            border-radius: 20px;
+            padding: 5px 10px;
+        }
+
+        .options {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="radio"] {
+            margin-left: 20px;
+        }
+
+        input[type="radio"],
+        label input[type="radio"] {
+            vertical-align: middle;
+        }
+
+        input[type="submit"] {
+            display: block;
+            width: 300px;
+            height: 100px;
+            margin: 20px auto;
+            border: none;
+            background: white;
+            color: rgb(255, 255, 255);
+            font-size: 20px;
+            cursor: pointer;
+            transition: 0.9s;
+            background: rgb(0, 0, 0);
+            border: black;
+            box-shadow: 0 0 10px 2px dodgerblue;
+            border-radius: 850px;
+        }
+
+        .clock {
+            font-family: "Share Tech Mono", monospace;
+            text-align: center;
+            color: #daf6ff;
+            text-shadow: 0 0 30px #0aafe6, 0 0 30px rgba(10, 175, 230, 0);
+        }
+
+        #time {
+            letter-spacing: 0.05em;
+            font-size: 40px;
+        }
+
+        #date {
+            letter-spacing: 0.1em;
+            font-size: 16px;
+        }
+
+        #output {
+            text-align: center;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .result-box {
+            display: inline-block;
+            padding: 20px;
+            background-color: black;
+            border: 2px solid dodgerblue;
+            box-shadow: 0 0 20px 10px dodgerblue;
+            color: white;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .result-box.error {
+            background-color: rgb(0, 0, 0);
+            border: 2px solid dodgerblue;
+            box-shadow: 0 0 20px 10px dodgerblue;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="clock">
+        <p id="date"></p>
+        <p id="time"></p>
+    </div>
+    <form id="productForm" onsubmit="generateDescription(); return false;">
+        <div class="container">
+            <div class="left">
+                <input type="text" id="product" placeholder="Name of the product" required>
+                <input type="text" id="category" placeholder="Category" required>
+                <input type="text" id="keywords" placeholder="Keywords (Separate ( , )with Commas)" required>
+                <input type="text" id="productFeatures" placeholder="Product Features (Separate ( , ) with Commas)">
+            </div>
+            <div class="right">
+                <label>
+                    <div class="question">Free Shipping :</div>
+                    <div class="options">
+                        <input type="radio" name="freeShipping" value="yes" required>Yes
+                        <input type="radio" name="freeShipping" value="no">No
+                    </div>
+                </label>
+
+                <label>
+                    <div class="question">Personalizable :</div>
+                    <div class="options">
+                        <input type="radio" name="personalizable" value="yes" required>Yes
+                        <input type="radio" name="personalizable" value="no">No
+                    </div>
+                </label>
+
+                <label>
+                    <div class="question">Customizable :</div>
+                    <div class="options">
+                        <input type="radio" name="customizable" value="yes" required>Yes
+                        <input type="radio" name="customizable" value="no">No
+                    </div>
+                </label>
+
+                <label>
+                    <div class="question">Return :</div>
+                    <div class="options">
+                        <input type="radio" name="returnable" value="yes" required>Yes
+                        <input type="radio" name="returnable" value="no">No
+                    </div>
+                </label>
+            </div>
+        </div>
+        <input type="submit" value="Create Description">
+    </form>
+    <div id="output">
+        <!-- açıklama sonucu görüntülnir -->
+    </div>
+
+    <script>
+        const WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+
+        function updateTime() {
+            var now = new Date();
+
+            document.getElementById("time").innerText =
+                zeroPadding(now.getHours(), 2) + ":" +
+                zeroPadding(now.getMinutes(), 2) + ":" +
+                zeroPadding(now.getSeconds(), 2);
+
+            document.getElementById("date").innerText =
+                now.getFullYear() + "-" +
+                zeroPadding(now.getMonth() + 1, 2) + "-" +
+                zeroPadding(now.getDate(), 2) + " " +
+                WEEK[now.getDay()];
+        }
+
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        function zeroPadding(num, digit) {
+            return String(num).padStart(digit, '0');
+        }
+
+        function generateDescription() {
+            const details = {
+                'product': document.getElementById("product").value,
+                'category': document.getElementById("category").value,
+                'keywords': document.getElementById("keywords").value,
+                'product_features': document.getElementById("productFeatures").value,
+                'free_shipping': document.querySelector('input[name="freeShipping"]:checked').value,
+                'personalizable': document.querySelector('input[name="personalizable"]:checked').value,
+                'customizable': document.querySelector('input[name="customizable"]:checked').value,
+                'return': document.querySelector('input[name="returnable"]:checked').value
+            };
+
+            fetch('YOUR_FLASK_API_URL_HERE', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(details),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("There was a problem with the network response.");
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById("output").innerHTML = `<div class="result-box">${data.description}</div>`;
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            showAlertAndResetForm("Error: " + error.message); 
+        });
+    }
+
+    function showAlertAndResetForm(errorMessage) {
+        alert(errorMessage); 
+        document.getElementById("productForm").reset();
+    }
+</script>
+</body>
+
+</html>
